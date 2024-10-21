@@ -5,36 +5,36 @@
     2.1 Добавить строчку в dockerfile    
     `RUN apt-get update && apt-get install -y ansible && apt-get install -y docker-compose-plugin`   
     Добавляем `ansible ` и `docker-compose`   
-    Итоговый dockerfile должен выглядеть вот так    
+    Итоговый dockerfile должен выглядеть вот так
     ```
-FROM jenkins/jenkins:2.462.2-jdk17
-USER root
-RUN apt-get update && apt-get install -y lsb-release
-RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
-  https://download.docker.com/linux/debian/gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) \
-  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
-  https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-RUN apt-get update && apt-get install -y docker-ce-cli
-RUN apt-get update && apt-get install -y ansible && apt-get install -y docker-compose-plugin
-USER jenkins
-RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"	
-
-```
+    FROM jenkins/jenkins:2.462.2-jdk17
+    USER root
+    RUN apt-get update && apt-get install -y lsb-release
+    RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+      https://download.docker.com/linux/debian/gpg
+    RUN echo "deb [arch=$(dpkg --print-architecture) \
+      signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+      https://download.docker.com/linux/debian \
+      $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+    RUN apt-get update && apt-get install -y docker-ce-cli
+    RUN apt-get update && apt-get install -y ansible && apt-get install -y docker-compose-plugin
+    USER jenkins
+    RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"	
+    
+    ```
     2.2 Выполняем команду    
     ```
-docker build -t myjenkins-blueocean:2.462.2-1 .
-```
+    docker build -t myjenkins-blueocean:2.462.2-1 .
+    ```
     2.3 Запускаем контейнер    
     ```
-docker run --name jenkins-blueocean --restart=on-failure --detach ^
-  --network jenkins --env DOCKER_HOST=tcp://docker:2376 ^
-  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 ^
-  --volume jenkins-data:/var/jenkins_home ^
-  --volume jenkins-docker-certs:/certs/client:ro ^
-  --publish 8080:8080 --publish 50000:50000 myjenkins-blueocean:2.462.2-1
-```
+    docker run --name jenkins-blueocean --restart=on-failure --detach ^
+      --network jenkins --env DOCKER_HOST=tcp://docker:2376 ^
+      --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 ^
+      --volume jenkins-data:/var/jenkins_home ^
+      --volume jenkins-docker-certs:/certs/client:ro ^
+      --publish 8080:8080 --publish 50000:50000 myjenkins-blueocean:2.462.2-1
+    ```
        
    
 3 Заходим в Jenkins по [http://localhost:8080/](http://localhost:8080/) и создаем новый pipeline "Ansible"   
@@ -89,10 +89,9 @@ pipeline {
   3.3   
   Генерируем ключ для Github и добавляем его в аккаунт.   
   Запустим команду на машине с linux   
-  ```
-Ssh-keygen -t rsa
-
-```
+    ```
+    Ssh-keygen -t rsa
+    ```
   После ответа на вопросы об имени ключа (укажите другое имя кроме id\_rsa, если ваш стандартный ключ уже используется, поскольку его можно случайно перезаписать), защита паролем (выбираем «no») вы получите пару приватный/публичный ключ. Публичный ключ имеет расширение .pub после имени, приватный ключ его не имеет.   
   **Важно!** Старайтесь не светить свой приватный ключ, особенно если он используется где то для доступа к защищенным репозиториям, это вопрос безопасности.   
   После генерации ключей идем на github.com, кликаем на иконку профиля справа, Settings→SSH and GPG keys и попадаем на страницу добавления ssh ключей профиля.   
@@ -103,7 +102,7 @@ Ssh-keygen -t rsa
   ID  — идентификатор, уникальный для каждого credential, по которому вызывают их из пайплайна. Username — имя для вашего профиля Github. Private key → нажмите Enter Directly → Add и скопируйте значение из сгенерированного **Приватного** ключа.   
   ![image.png](files\image_g.png)    
   3.6 Меняем скрипт, добавляем credentialsId   
-  ```
+```
 pipeline {
     agent any
 
